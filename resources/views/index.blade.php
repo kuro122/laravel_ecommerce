@@ -11,7 +11,7 @@
 
                         <a class="text-dark" href="/logout">Logout</a>
                      @else
-                        <a class="text-dark" href="/adminlogin">Login</a>
+                        <a class="text-dark" href="/userlogin">Login</a>
                         @endif
                 
                 </div>

@@ -293,8 +293,9 @@ public function  coupondetails(Request $request){
 }
 
 
-public function checkcoupon(Request $request ,$price){
+public function checkcoupon(Request $request){
     $code = $request->input('code');
+    $price = $request->input('price');
     $co = DB::select('select * from coupon where code = ?',[$code]);
     if($co){
         $dt = new DateTime();
@@ -315,10 +316,7 @@ public function checkcoupon(Request $request ,$price){
             return 'Either coupon expired or limit exceeded';
         }
 
-       
-         
-
-        return response()->json(['status'=>'coupon details found'.$discount_percent." ".$usage_count." ".$usage_limit." ".$start_date." ".$end_date." ". $code, 'total_price'=>$total_price , 'total price after discount'=>$result]);
+        return response()->json(['status'=>$result]);
     }else{
         return response()->json(['status'=>'coupon details not found']);
     }

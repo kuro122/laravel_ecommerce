@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\adminController;
+use App\Http\Controllers\dataController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,5 +40,8 @@ Route::get('/search', [adminController::class,'search']);
 Route::get('/searcheddata', [adminController::class,'searcheddata']);
 //  create coupon 
 Route::get('/createnewcoupon',[adminController::class,'createnewcoupon']);
-Route::post('/coupondetails',[adminController::class,'coupondetails']);
+Route::post('/coupondetails',  [adminController::class,'coupondetails']);
 Route::post('/checkcoupon',[adminController::class,'checkcoupon']);
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ data collector for admin +++++++++++
+Route::get('/data',[dataController::class,'all_data']);

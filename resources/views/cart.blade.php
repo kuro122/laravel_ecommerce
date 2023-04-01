@@ -54,23 +54,30 @@
     
 // coupon 
 $(document).ready(function() {
-    console.log('function called');
+            
     $('#myFormcoupon').on('submit',  function(e) {
+        var input = document.getElementById("myInput");
+        var data = parseFloat($("#myParagraph").text());
+                input.value = data;
         e.preventDefault();
         $.ajax({
             type: 'POST',
             url: '/checkcoupon',
             data: $(this).serialize(),
             success: function(response) {
-                var data = response.status;
-                document.getElementById("myParagraph").innerHTML = data+500;
-                console.log(response);
+                var res = response.status;
+                var prices = document.getElementById("myParagraph").innerHTML = data;
+                document.getElementById("discountprice").innerHTML = prices+500;
+                document.getElementById('discountpercent').innerHTML = res;
+                document.getElementById('totprice').innerHTML = data;
+                console.log(data,'-------------------------',res);
             },
             error: function(xhr) {
                 console.log(xhr.responseText);
             }
         });
     });
+   
 });
 
         </script>
@@ -80,7 +87,6 @@ $(document).ready(function() {
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center">
                     @if(Auth::check())
-
                         <a class="text-dark" href="/logout">Logout</a>
                      @else
                         <a class="text-dark" href="/adminlogin">Login</a>
@@ -191,7 +197,8 @@ $(document).ready(function() {
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle" id="product-{{ $data->id }}" >{{$data->price}}</td>
+
+                            <td class="align-middle" id="product-{{ $data->id }}" value="{{$data->price}}"  >{{$data->price}}</td>
                             
                             <td class="align-middle"><button type="button" class="btn btn-sm btn-primary  delete-item"  data-id="{{ $data->id }}" ><i class="fa fa-times"></i></button></td>
 
@@ -204,7 +211,7 @@ $(document).ready(function() {
                 <form class="mb-5" id="myFormcoupon">
                     @csrf
                     <div class="input-group">
-                        <input type="text" name="price" value="{{$total}}" style="display: none;">
+                        <input type="text" id="myInput" name="price" value="{{$total}}" style="display: none;">
 
                         <input type="text" class="form-control p-4" placeholder="Coupon Code" name="code">
                         <div class="input-group-append">
@@ -220,7 +227,7 @@ $(document).ready(function() {
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3 pt-1">
                             <h6 class="font-weight-medium">Subtotal</h6>
-                            <h6 class="font-weight-medium">{{$total}}</h6>
+                            <h6 class="font-weight-medium" id="myParagraph">{{$total}}</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
@@ -230,24 +237,26 @@ $(document).ready(function() {
                     <div class="card-footer border-secondary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold" id="myParagraph">{{$total+500}} </h5>
+                            <h5 class="font-weight-bold" id="discountprice">{{$total+500}} </h5>
+                         <span id="totprice"></span>  - <span id="discountpercent"></span>
                         </div>
                         <a href="/checkout/{{$userid}}"> <button class="btn btn-block btn-primary my-3 py-3">   Proceed To Checkout</button></a> 
                     </div>
                 </div>
             </div>
-        </div>
+        </div>  
     </div>
     <!-- Cart End -->
   <script>
     //  product increment 
-    
+
+
 $('.quantity button' ).on('click', function () {
-   
         var itemId = $(this).data('id');
         console.log(itemId,'item iddd');
-        // const MAX_ITEMS = 10;
-        const price = $('#product-' + itemId).text();
+        const price = $('#product-' + itemId).attr('value');
+        console.log(price);
+
         var button = $(this);
         var oldValue = button.parent().parent().find('input').val();
         if (button.hasClass('btn-plus')) {
@@ -255,12 +264,17 @@ $('.quantity button' ).on('click', function () {
             
             var totalprice = price * newVal;
             document.getElementById('product-' + itemId).innerHTML = totalprice;
+            document.getElementById('myParagraph').innerHTML = totalprice;
             console.log(newVal, price);
         } else {
             if (oldValue > 0) {
                 var newVal = parseFloat(oldValue) - 1;
+            var totalprice = price * newVal;
+            document.getElementById('product-' + itemId).innerHTML = totalprice;
             } else {
                 newVal = 0;
+                var totalprice = price * newVal;
+            document.getElementById('product-' + itemId).innerHTML = totalprice;
             }
         }
         button.parent().parent().find('input').val(newVal);

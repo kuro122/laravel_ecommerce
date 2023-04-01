@@ -31,6 +31,7 @@
             document.querySelector('#myForm').submit();
           });
         });
+        
       </script>
 </head>
 <body>

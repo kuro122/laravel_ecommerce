@@ -221,9 +221,9 @@ public function stripePost(Request $request)
 
     $stripe = new \Stripe\StripeClient("sk_test_51Mea73SJaP0ximCYamrqV4g1GeQjvImK0KGEbxc97dA2HS1nzSb41jezwc5sCc9tfioeJQZw3TA7dRBgwpB51nJH00V1cqzY7q");
 
-    $charge = $stripe->charges->create([
+    $charge = $stripe->PaymentIntent->create([
             "amount" => 200,
-            "currency" => "USD",
+            "currency" => "inr",
             "source" => $request->stripeToken,
             "description" => "This payment is testing purpose of websolutionstuff",
     ]);
@@ -316,7 +316,7 @@ public function checkcoupon(Request $request){
             return 'Either coupon expired or limit exceeded';
         }
 
-        return response()->json(['status'=>$result]);
+        return response()->json(['status'=>$result,'discount'=>$discount_percent,]);
     }else{
         return response()->json(['status'=>'coupon details not found']);
     }
@@ -326,5 +326,7 @@ public function checkcoupon(Request $request){
     // check usage limit
 
 }
+
+
 
 }

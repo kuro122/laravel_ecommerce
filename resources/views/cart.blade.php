@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>EShopper - Bootstrap Shop Template</title>
@@ -38,20 +37,38 @@
       
     $(document).on('click', '.delete-item', function() {
     console.log('working');
-        var itemId = $(this).data('id');
-        console.log(itemId);
-        $.ajax({
-            url: '/destroy/' + itemId,
-            type: 'GET',
-            data: {
-                '_token': '{{ csrf_token() }}',
+    var itemId = $(this).data('id');
+    console.log(itemId);
+    $.ajax({
+        url: '/destroy/' + itemId,
+        type: 'GET',
+        data: {
+            '_token': '{{ csrf_token() }}',
+        },
+        success: function() {
+            $('#item-' + itemId).remove();
+            $.ajax({
+                url: '/cart/' + itemId,
+                type: 'GET',
+                success: function(response) {
+                var cdata = response.cdata;
+                var total = response.total;
+                var prices = response.prices;
+                var userid = response.userid;
+                console.log(response);
+                // Do something with the data, such as updating the HTML
+                document.getElementById("myParagraph").innerHTML = prices;
+                // Example: update the text of an element with the total value
+                // $('#total-value').text(total);
             },
-            success: function() {
-                $('#item-' + itemId).remove();
+            error: function(xhr, status, error) {
+                // Handle any errors that may occur during the request
             }
-        });
+            });
+        }
     });
-    
+});
+
 // coupon 
 $(document).ready(function() {
             
@@ -228,6 +245,7 @@ $(document).ready(function() {
                         <div class="d-flex justify-content-between mb-3 pt-1">
                             <h6 class="font-weight-medium">Subtotal</h6>
                             <h6 class="font-weight-medium" id="myParagraph">{{$total}}</h6>
+                            -<span id="discountpercent"></span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
@@ -238,7 +256,7 @@ $(document).ready(function() {
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Total</h5>
                             <h5 class="font-weight-bold" id="discountprice">{{$total+500}} </h5>
-                         <span id="totprice"></span>  - <span id="discountpercent"></span>
+                        
                         </div>
                         <a href="/checkout/{{$userid}}"> <button class="btn btn-block btn-primary my-3 py-3">   Proceed To Checkout</button></a> 
                     </div>
@@ -250,7 +268,7 @@ $(document).ready(function() {
   <script>
     //  product increment 
 
-
+var rate =  0;
 $('.quantity button' ).on('click', function () {
         var itemId = $(this).data('id');
         console.log(itemId,'item iddd');
@@ -264,8 +282,9 @@ $('.quantity button' ).on('click', function () {
             
             var totalprice = price * newVal;
             document.getElementById('product-' + itemId).innerHTML = totalprice;
-            document.getElementById('myParagraph').innerHTML = totalprice;
-            console.log(newVal, price);
+            // document.getElementById('myParagraph').innerHTML = totalprice;
+            rate = newVal*price;
+            console.log(newVal,'-------------', rate);
         } else {
             if (oldValue > 0) {
                 var newVal = parseFloat(oldValue) - 1;

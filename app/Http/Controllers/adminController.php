@@ -100,8 +100,8 @@ class adminController extends Controller
             $quer = DB::select('select * from product where id = ?',[$id]);
             return view('shopdetails',['quer'=>$quer]);
         }
-        
-        public function cart($id){
+       
+        public function cart(Request $request, $id){
             $userid = Auth::id();
             $existingRecord = DB::select('select * from cart where user_id = ? and product_id = ?', [$userid, $id]);
             if (!$existingRecord) {
@@ -116,8 +116,12 @@ class adminController extends Controller
                 
             $prices = $cart_data->pluck('price'); // get a collection of all prices
             $total = $prices->sum(); // calculate the sum of prices
-            return view('cart',['cdata'=>$cart_data,'total' => $total,'prices'=>$prices,'userid'=>$userid]);
-          
+            if ($request->ajax()) {
+                return response()->json(['cdata'=>$cart_data,'total' => $total,'prices'=>$prices,'userid'=>$userid]);
+              } else {
+                return view('cart',['cdata'=>$cart_data,'total' => $total,'prices'=>$prices,'userid'=>$userid]);
+              }
+              
 
 
         }

@@ -24,7 +24,26 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
+
 <body>
+    <script>
+         document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+    document.getElementById("sizeform").submit();
+        document.getElementById("colorform").submit();
+  });
+        // Get a reference to the login button
+    var loginButton = document.getElementById('login-button');
+
+// Add a click event listener to the button
+loginButton.addEventListener('click', function(event) {
+    // Prevent the default behavior of the button, which is to submit the form
+    event.preventDefault();
+    
+    // Redirect the user to the specified URL
+    window.location.href = "/userlogin";
+}); 
+    
+</script>
     <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-2 px-xl-5">
@@ -128,15 +147,79 @@
                 </div>
                 <h3 class="font-weight-semi-bold mb-4">RS. {{$data->price}}</h3>
                 <p class="mb-4">{{$data->description}}</p>
-              
+                <div class="d-flex mb-3">
+                    <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
+                    <form id="sizeform" method="POST" action="/cart/{{$data->id}}">
+                        @csrf
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-1" name="size" value="XS">
+                            <label class="custom-control-label" for="size-1">XS</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-2" name="size" value="S">
+                            <label class="custom-control-label" for="size-2">S</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-3" name="size" value="M">
+                            <label class="custom-control-label" for="size-3">M</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-4" name="size" value="L">
+                            <label class="custom-control-label" for="size-4">L</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="size-5" name="size" value="XL">
+                            <label class="custom-control-label" for="size-5">XL</label>
+                        </div>
+                </div>
+                <div class="d-flex mb-4">
+                    <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
+                  
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black">
+                            <label class="custom-control-label" for="color-1">Black</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-2" name="color" value="White">
+                            <label class="custom-control-label" for="color-2">White</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-3" name="color" value="Red">
+                            <label class="custom-control-label" for="color-3">Red</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-4" name="color" value="Blue">
+                            <label class="custom-control-label" for="color-4">Blue</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" id="color-5" name="color" value="Green">
+                            <label class="custom-control-label" for="color-5">Green</label>
+                        </div>
+                    {{-- </form> --}}
+                </div>
                 <div class="d-flex align-items-center mb-4 pt-2">
-                    @if(Auth::check())
-                    <a href="/cart/{{$data->id}}"> <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i>Add To Cart</button></a>
-                 @else
-                 <a href="/userlogin"> <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i>Login to Book</button></a>
+                    <div class="input-group quantity mr-3" style="width: 130px;">
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary btn-minus" >
+                            <i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                        <input type="text" class="form-control bg-secondary text-center" name="no_of_items" value="1">
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary btn-plus">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                             @if(Auth::check())
+                <button class="btn btn-primary px-3" type="submit"><i class="fa fa-shopping-cart mr-1"></i>Add To Cart</button>
+             @else
+             <a href="/userlogin">back to login</a>
+             {{-- <button class="btn btn-primary px-3"  onclick="window.location.href='/userlogin';"><i class="fa fa-shopping-cart mr-1"></i>Login to Book</button> --}}
 
-                    @endif
-            
+                @endif
+                </form>
+    
                 </div>
                 <div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
@@ -428,7 +511,20 @@
         </div>
     </div>
     <!-- Footer End -->
-
+    <script>
+        $(document).ready(function() {
+          $('.btn-plus').click(function(event) {
+            event.preventDefault();
+            var value = parseInt($('input[name="no_of_items"]').val());
+            $('input[name="no_of_items"]').val(value + 1);
+          });
+          $('.btn-minus').click(function(event) {
+            event.preventDefault();
+            var value = parseInt($('input[name="no_of_items"]').val());
+            $('input[name="no_of_items"]').val(value - 1);
+          });
+        });
+        </script>
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>

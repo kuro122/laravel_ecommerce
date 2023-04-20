@@ -27,16 +27,63 @@
         document.addEventListener("DOMContentLoaded", function() {
           document.querySelector('#searchIcon').addEventListener("click", function(e) {
             e.preventDefault();
-            document.querySelector('#myForm').submit();
+            document.querySelector('#search-form').submit();
           });
         });
       </script>
+       <script>
+        $(function() {
+            $('#search-form').on('submit', function(e) {
+                e.preventDefault();
+    
+                var query = $('input[name="search"]').val();
+                $.ajax({
+                    url: "/ajax_search",
+                    method: 'GET',
+                    data: { query: query },
+                    success: function(response) {
+                        var data = response.data;
+                        console.log(data,'====================');
+                        var productsHtml = '';
+                        for (var i = 0; i < data.length; i++) {
+                            var product = data[i];
+                            console.log(product.price,'this is i value');
+    
+                            productsHtml += '<div class="col-lg-3 col-md-6 col-sm-12 pb-1 product">' +
+                                '<div class="card product-item border-0 mb-4">' +
+                                '<div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">' +
+                                '<img class="img-fluid w-100" src="images/' + product.image + '" alt="">' +
+                                '</div>' +
+                                '<div class="card-body border-left border-right text-center p-0 pt-4 pb-3">' +
+                                '<h6 class="text-truncate mb-3">' + product.name + '</h6>' +
+                                '<div class="d-flex justify-content-center">' +
+                                '<h6>RS. ' + product.price + '</h6>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="card-footer d-flex justify-content-between bg-light border">' +
+                                '<a href="/shopdetails/' + product.id + '" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>' +
+                                '<a href="/cart/{{Auth::id()}}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>';
+                        }
+                            // Replace the existing product container with the new HTML
+                        $('#product-container').html(productsHtml);
+                
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <script type="text/javascript">
-      
     $(document).on('click', '.delete-item', function() {
     console.log('working');
+    var userId = "{{ $userid }}";
     var itemId = $(this).data('id');
     console.log(itemId);
     $.ajax({
@@ -45,29 +92,17 @@
         data: {
             '_token': '{{ csrf_token() }}',
         },
-        success: function() {
+        success: function(response) {
+            console.log('this si ssuccess file -------------------',response)
             $('#item-' + itemId).remove();
-            $.ajax({
-                url: '/cart/' + itemId,
-                type: 'GET',
-                success: function(response) {
-                var cdata = response.cdata;
-                var total = response.total;
-                var prices = response.prices;
-                var userid = response.userid;
-                console.log(response);
-                // Do something with the data, such as updating the HTML
-                document.getElementById("myParagraph").innerHTML = prices;
-                // Example: update the text of an element with the total value
-                // $('#total-value').text(total);
-            },
-            error: function(xhr, status, error) {
-                // Handle any errors that may occur during the request
-            }
-            });
+            document.getElementById("myParagraph").innerHTML = response.total;
+            document.getElementById("discountprice").innerHTML = response.total+500;
+            console.log('success called cart url',response.total);
         }
     });
+          
 });
+// caching , profiling load balancing, anychronous processing
 
 // coupon 
 $(document).ready(function() {
@@ -84,10 +119,11 @@ $(document).ready(function() {
             success: function(response) {
                 var res = response.status;
                 var prices = document.getElementById("myParagraph").innerHTML = data;
-                document.getElementById("discountprice").innerHTML = prices+500;
+                var mainprice = prices - res;
+                document.getElementById("discountprice").innerHTML = mainprice+500;
                 document.getElementById('discountpercent').innerHTML = res;
                 document.getElementById('totprice').innerHTML = data;
-                console.log(data,'-------------------------',res);
+                console.log(data,'-------------------------',prices);
             },
             error: function(xhr) {
                 console.log(xhr.responseText);
@@ -138,7 +174,7 @@ $(document).ready(function() {
                 </a>
             </div>
             <div class="col-lg-6 col-6 text-left">
-                <form id="myForm" action="/searcheddata" method="GET">
+                <form id="search-form">
                     <div class="input-group">
                       <input type="text" class="form-control" placeholder="Search for products" name="search">
                       <div class="input-group-append">
@@ -199,23 +235,9 @@ $(document).ready(function() {
                         <tr id="item-{{ $data->id }}">
                             <td class="align-middle"><img src="{{ asset('images/'.$data->image) }}" alt="" style="width: 50px;"> {{$data->name}}</td>
                            
-                            <td class="align-middle "  >
-                                <div class="input-group quantity mx-auto" style="width: 100px;" >
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus " type="button"  data-id="{{ $data->id }}">
-                                        <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary text-center" value="1" >
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus" type="button" data-id="{{ $data->id }}">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
+                            <td class="align-middle "  >{{$data->no_of_items}}</td>
 
-                            <td class="align-middle" id="product-{{ $data->id }}" value="{{$data->price}}"  >{{$data->price}}</td>
+                            <td class="align-middle" id="product-{{ $data->id }}" value="{{$data->price}}"  >{{$data->price*$data->no_of_items}}</td>
                             
                             <td class="align-middle"><button type="button" class="btn btn-sm btn-primary  delete-item"  data-id="{{ $data->id }}" ><i class="fa fa-times"></i></button></td>
 
@@ -245,7 +267,7 @@ $(document).ready(function() {
                         <div class="d-flex justify-content-between mb-3 pt-1">
                             <h6 class="font-weight-medium">Subtotal</h6>
                             <h6 class="font-weight-medium" id="myParagraph">{{$total}}</h6>
-                            -<span id="discountpercent"></span>
+                              - <span id="discountpercent"></span>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>

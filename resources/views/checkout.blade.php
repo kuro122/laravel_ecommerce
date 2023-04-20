@@ -121,27 +121,27 @@
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label>First Name</label>
-                            <input class="form-control" type="text" placeholder="John" name="firstname">
+                            <input class="form-control" type="text" placeholder="John" name="firstname" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Last Name</label>
-                            <input class="form-control" type="text" placeholder="Doe" name="lastname">
+                            <input class="form-control" type="text" placeholder="Doe" name="lastname" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>E-mail</label>
-                            <input class="form-control" type="text" placeholder="example@email.com" name="email">
+                            <input class="form-control" type="text" placeholder="example@email.com" name="email" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Mobile No</label>
-                            <input class="form-control" type="text" placeholder="+123 456 789" name="mnumber">
+                            <input class="form-control" type="text" placeholder="+123 456 789" name="mnumber" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Address Line 1</label>
-                            <input class="form-control" type="text" placeholder="123 Street" name="address">
+                            <input class="form-control" type="text" placeholder="123 Street" name="address" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Country</label>
-                            <select class="custom-select" name="country">
+                            <select class="custom-select" name="country" required>
                                 <option selected>United States</option>
                                 <option value="afganistan">Afghanistan</option>
                                 <option value="albania">Albania</option>
@@ -150,15 +150,15 @@
                         </div>
                         <div class="col-md-6 form-group">
                             <label>City</label>
-                            <input class="form-control" type="text" placeholder="New York" name="city">
+                            <input class="form-control" type="text" placeholder="New York" name="city" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>State</label>
-                            <input class="form-control" type="text" placeholder="New York" name="state">
+                            <input class="form-control" type="text" placeholder="New York" name="state" required>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>ZIP Code</label>
-                            <input class="form-control" type="text" placeholder="123" name="zipcode">
+                            <input class="form-control" type="text" placeholder="123" name="zipcode" required>
                         </div>
                     </div>
                 </div>

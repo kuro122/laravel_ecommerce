@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
    <head>
-      <title>How To Integrate Stripe Payment Gateway In Laravel 9 - Websolutionstuff</title>
+      <title>H</title>
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>      
    </head>
@@ -13,7 +13,6 @@
                   <div class="panel-heading" >
                      <div class="row">
                         <h3>Payment Details</h3>
-                     
                      </div>
                   </div>
                   <div class="panel-body">
@@ -50,13 +49,7 @@
                               <input class='form-control card-expiry-year' placeholder='YYYY' size='4' type='text'>
                            </div>
                         </div>
-                      {{-- <div class='form-row row'>
-                         <div class='col-md-12 error form-group hide'>
-                            <div class='alert-danger alert'>Please correct the errors and try
-                               again.
-                            </div>
-                         </div>
-                      </div> --}}
+                
                         <div class="form-row row">
                            <div class="col-xs-12">
                               <button class="btn btn-primary btn-lg btn-block" type="submit">Pay Now</button>

@@ -24,16 +24,57 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-          document.querySelector('#searchIcon').addEventListener("click", function(e) {
+   <script>
+    $(function() {
+        $('#search-form').on('submit', function(e) {
             e.preventDefault();
-            document.querySelector('#myForm').submit();
-          });
+
+            var query = $('input[name="search"]').val();
+            $.ajax({
+                url: "/ajax_search",
+                method: 'GET',
+                data: { query: query },
+                success: function(response) {
+                    var data = response.data;
+                    console.log(data,'====================');
+                    var productsHtml = '';
+                    for (var i = 0; i < data.length; i++) {
+                        var product = data[i];
+                        console.log(product.price,'this is i value');
+
+                        productsHtml += '<div class="col-lg-3 col-md-6 col-sm-12 pb-1 product">' +
+                            '<div class="card product-item border-0 mb-4">' +
+                            '<div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">' +
+                            '<img class="img-fluid w-100" src="images/' + product.image + '" alt="">' +
+                            '</div>' +
+                            '<div class="card-body border-left border-right text-center p-0 pt-4 pb-3">' +
+                            '<h6 class="text-truncate mb-3">' + product.name + '</h6>' +
+                            '<div class="d-flex justify-content-center">' +
+                            '<h6>RS. ' + product.price + '</h6>' +
+                            '</div>' +
+                            '</div>' +
+                            '<div class="card-footer d-flex justify-content-between bg-light border">' +
+                            '<a href="/shopdetails/' + product.id + '" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>' +
+                            '<a href="/cart/{{Auth::id()}}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>';
+                    }
+                        // Replace the existing product container with the new HTML
+                    $('#product-container').html(productsHtml);
+            
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
         });
+    });
+</script>
         
-      </script>
 <body>
+  
+    
     <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-2 px-xl-5">
@@ -75,13 +116,14 @@
                 </a>
             </div>
             <div class="col-lg-6 col-6 text-left">
-                <form id="myForm" action="/searcheddata" method="GET">
+                <form id="search-form">
                     <div class="input-group">
                       <input type="text" class="form-control" placeholder="Search for products" name="search">
                       <div class="input-group-append">
-                        <span class="input-group-text bg-transparent text-primary">
-                          <i class="fa fa-search" id="searchIcon"></i>
-                        </span>
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fa fa-search"></i>
+                          </button>
+                    
                       </div>
                     </div>
                   </form>
@@ -93,7 +135,7 @@
                 </a>
                 <a href="" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge">{{$total_cart}}</span>
                 </a>
             </div>
         </div>
@@ -134,10 +176,11 @@
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">Trandy Products</span></h2>
         </div>
-        <div class="row px-xl-5 pb-3">
+     
+        <div class="row px-xl-5 pb-3" id="product-container" >
 
             @foreach($data as $data)
-            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1 product">
                 <div class="card product-item border-0 mb-4">
                     <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                         <img class="img-fluid w-100" src="images/{{$data->image}}" alt="">
@@ -150,10 +193,12 @@
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="/shopdetails/{{$data->id}}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        @if(Auth::check())
+                        @auth
                        
                         <a href="/cart/{{Auth::id()}}" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
-                       @endif
+                       @else
+                       <a href="/userlogin" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Login</a>
+                    @endauth
                         
                     </div>
                 </div>
@@ -308,6 +353,7 @@
 
     <!-- Template Javascript -->
     <script src="{{asset('js/main.js')}}"></script>
+ 
 </body>
 
 </html>

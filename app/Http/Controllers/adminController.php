@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use DB;
+use Illuminate\Support\Facades\DB ;
 use Stripe;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +14,10 @@ use Stripe\Exception\CardException;
 use Stripe\StripeClient;
 use App\Models\product;
 use DateTime;
+use Dompdf\Dompdf;
+use PDF;
+
+use Illuminate\Support\Facades\View;
 class adminController extends Controller
 
 {
@@ -89,10 +93,11 @@ class adminController extends Controller
         }
    
 
-        public function index(){
-           
+        public function index(Request $request){
+            //  cart details addition
+             $total_cart = 20;
             $data = DB::select('select * from product');
-            return view('index',['data'=>$data]);
+                return view('index',['data'=>$data,'total_cart'=>$total_cart]);
         }
 
 
@@ -102,10 +107,13 @@ class adminController extends Controller
         }
        
         public function cart(Request $request, $id){
+            $color = $request->input('color');
+            $size = $request->input('size');
+            $no_of_items = $request->input('no_of_items');
             $userid = Auth::id();
             $existingRecord = DB::select('select * from cart where user_id = ? and product_id = ?', [$userid, $id]);
             if (!$existingRecord) {
-                $qr = DB::insert('insert into cart (user_id, product_id) values (?,?)', [$userid, $id]);
+                $qr = DB::insert('insert into cart (user_id, product_id,color,size,no_of_items) values (?,?,?,?,?)', [$userid, $id,$color,$size,$no_of_items]);
             }
             $cart_data = DB::table('cart')
                 ->join('product', 'cart.product_id', '=', 'product.id')
@@ -113,12 +121,16 @@ class adminController extends Controller
                 ->where('cart.user_id', $userid)
                 ->get();
 
-                
             $prices = $cart_data->pluck('price'); // get a collection of all prices
-            $total = $prices->sum(); // calculate the sum of prices
+            $items = $cart_data->pluck('no_of_items');
+            $total = $prices->map(function ($price, $index) use ($items) {
+                return $price * $items[$index];
+            })->sum();
+          // calculate the sum of prices
             if ($request->ajax()) {
                 return response()->json(['cdata'=>$cart_data,'total' => $total,'prices'=>$prices,'userid'=>$userid]);
               } else {
+                // return response()->json(['total'=>$total_price,'items'=>$items]);
                 return view('cart',['cdata'=>$cart_data,'total' => $total,'prices'=>$prices,'userid'=>$userid]);
               }
               
@@ -126,22 +138,22 @@ class adminController extends Controller
 
         }
         
-        public function checkout(){
+        public function checkout(Request $request){
+            $discounted_price = $request->input('discount');
             if (Auth::check()) {
                 $cart_id = Auth::id();
             }
             // ______________________show product Details ____________________________
-          
-
             $cart_data = DB::table('cart')
             ->join('product', 'cart.product_id', '=', 'product.id')
             ->select('cart.*', 'product.name', 'product.price', 'product.image')
             ->where('cart.user_id', $cart_id)
             ->get();
-
-            
-        $prices = $cart_data->pluck('price'); // get a collection of all prices
-        $total = $prices->sum(); // calculate the sum of prices
+            $prices = $cart_data->pluck('price'); // get a collection of all prices
+            $items = $cart_data->pluck('no_of_items');
+            $total = $prices->map(function ($price, $index) use ($items) {
+                return $price * $items[$index];
+            })->sum();
         return view('checkout',['cdata'=>$cart_data,'total' => $total,'prices'=>$prices,'userid'=>$cart_id]);
       
         }
@@ -160,19 +172,15 @@ class adminController extends Controller
             $city = $request->input('city');
             $state = $request->input('state');
             $zipcode = $request->input('zipcode');
-            
-           
-            $save = DB::insert('insert into checkout (first_name,last_name,email,phone,address,country,city,state,zipcode,cart_id) values (?,?,?,?,?,?,?,?,?,?)',[$firstname,$lastname,$email,$phone,$address,$country,$city,$state,$zipcode,$cart_id]);
-       
+            $user_id = Auth::id();
+            $save = DB::insert('insert into checkout (first_name,last_name,email,phone,address,country,city,state,zipcode,cart_id,user_id) values (?,?,?,?,?,?,?,?,?,?,?)',[$firstname,$lastname,$email,$phone,$address,$country,$city,$state,$zipcode,$cart_id,$user_id]);
             return redirect('charge');
         }
 
-        public function striptest(){
-            return view('pay');
-        }
         public function charge(){
             return view('striptest');
         }
+
     public function payment(Request $request)
     {
         // Set the Stripe API key
@@ -198,10 +206,23 @@ class adminController extends Controller
 
 
 
-    public function destroy($id)
-{        $deleted = DB::delete("delete from cart where id = ?",[$id]);
+    public function destroy($id){
+
+        $deleted = DB::delete("delete from cart where id = ?",[$id]);
+        $userid = Auth::id();
+        $cart_data = DB::table('cart')
+            ->join('product', 'cart.product_id', '=', 'product.id')
+            ->select('cart.*', 'product.name', 'product.price', 'product.image')
+            ->where('cart.user_id', $userid)
+            ->get();
+
+        $prices = $cart_data->pluck('price'); // get a collection of all prices
+        $items = $cart_data->pluck('no_of_items');
+        $total = $prices->map(function ($price, $index) use ($items) {
+            return $price * $items[$index];
+        })->sum();
     if($deleted){
-        return response()->json(['success' => true]);
+        return response()->json(['cdata'=>$cart_data,'total' => $total,'prices'=>$prices,'userid'=>$userid]);
     }
     else {
         echo "some error";
@@ -209,28 +230,29 @@ class adminController extends Controller
 
 }
 
-
-
-// payment handingling
-
-
-public function stripe()
-{
+public function stripe(){
     return view('pay');
 }
 
 public function stripePost(Request $request)
 {
-    // Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-    $stripe = new \Stripe\StripeClient("sk_test_51Mea73SJaP0ximCYamrqV4g1GeQjvImK0KGEbxc97dA2HS1nzSb41jezwc5sCc9tfioeJQZw3TA7dRBgwpB51nJH00V1cqzY7q");
+    \Stripe\Stripe::setApiKey('sk_test_51Mea73SJaP0ximCYamrqV4g1GeQjvImK0KGEbxc97dA2HS1nzSb41jezwc5sCc9tfioeJQZw3TA7dRBgwpB51nJH00V1cqzY7q');
 
-    $charge = $stripe->PaymentIntent->create([
-            "amount" => 200,
-            "currency" => "inr",
-            "source" => $request->stripeToken,
-            "description" => "This payment is testing purpose of websolutionstuff",
+    $source = \Stripe\Source::create([
+        "type" => "card",
+        "card" => [
+            "token" => $request->stripeToken,
+        ],
     ]);
+
+    $paymentIntent = \Stripe\PaymentIntent::create([
+        "amount" => 200,
+        "currency" => "inr",
+        "source" => $source->id,
+        "description" => "This payment is testing purpose of websolutionstuff",
+    ]);
+
 
     Session::flash('success', 'Payment Successfull!');
        
@@ -253,26 +275,21 @@ public function login_user(Request $request){
 
 
 public function search(){
+    
     return view('search');
 }
-
-
-
 
 public function searcheddata(Request $request)
 {
     $searchTerm = $request->input('search');
 
-    $products = product::where('name', 'like', '%' . $searchTerm . '%')
+    $data = product::where('name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('description', 'like', '%' . $searchTerm . '%')
                         ->get();
 
-    return view('searcheddata', compact('products'));
+    return response()->json(['data' => $data]);
 }
 
-
-
-// CREATE NEW COUPON
 public function createnewcoupon(Request $request){
     return view('createcoupon');
 }
@@ -295,7 +312,6 @@ public function  coupondetails(Request $request){
     }
 
 }
-
 
 public function checkcoupon(Request $request){
     $code = $request->input('code');
@@ -324,13 +340,138 @@ public function checkcoupon(Request $request){
     }else{
         return response()->json(['status'=>'coupon details not found']);
     }
-    //  match the code 
-    // check valid or not
-    // check how much discount on coupon
-    // check usage limit
+   
+
+}
+
+//  addition of search functionality using ajax without page refresh
+
+public function ajax_search(Request $request){
+    $data = DB::select('select * from product');
+    $searchTerm = $request->input('query');
+
+    $searchdata = product::where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                        ->get();
+    if($request->ajax()){
+        return response()->json(['data' => $searchdata]);
+    }else{
+        return view('search',['data'=>$data]);
+    } 
+}
+
+//  pdf generation 
+
+public function invoice_download(Request $request)
+{
+    return view('invoice');
 
 }
 
 
 
+
+public function generatePDF()
+{
+    $name = 'shiv';
+    $tax = 500;
+    
+    if (Auth::check()) {
+        $cart_id = Auth::id();
+    }
+    // ______________________show product Details ____________________________
+    $data = DB::table('cart')
+    ->join('product', 'cart.product_id', '=', 'product.id')
+    ->select('cart.*', 'product.name', 'product.price', 'product.image')
+    ->where('cart.user_id', $cart_id)
+    ->get();
+    // $checkout_details = $data->id;
+
+    $prices = $data->pluck('price'); // get a collection of all prices
+    $items = $data->pluck('no_of_items');
+    $total = $prices->map(function ($price, $index) use ($items) {
+        return $price * $items[$index];
+    })->sum();
+    $content = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Invoice</title>
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            th, td {
+                text-align: left;
+                padding: 8px;
+                
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+        </style>
+    </head>
+    <body>
+    <h1>E-SHOPPER</h1>
+    Order ID : '.$name.'
+    <br>
+    xyz Name : 
+    <br>
+    address : 
+    <br>
+    contact : 
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>';
+            foreach ($data as $row) {
+                $content .= '<tr>
+                    <td>'.$row->name.'</td>
+                    <td>'.$row->no_of_items.'</td>
+                    <td>'.$row->price.'</td>
+                </tr>';
+            }
+            $content .= '
+                <tr>
+                    <td colspan="3">Subtotal</td>
+                    <td>'.$total.'</td>
+                </tr>
+                <tr>
+                    <td colspan="3">Shipping</td>
+                    <td>'.$tax.'</td>
+                </tr>
+                <tr>
+                    <td colspan="3">Total</td>
+                    <td>'.$total+$tax.'</td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+    </html>';
+    
+
+    $pdf = PDF::loadHTML($content);
+    return $pdf->download('table.pdf');
+// return view('invoice');
 }
+
+
+}
+
+
+
+// details in invoice  
+// user details                       Product Details
+// name                               product name1 price
+// email                              product name 2 price
+// contact address                    company name 
+
+//                                     total Price 

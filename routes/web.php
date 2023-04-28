@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\dataController;
+use App\Http\Controllers\productController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,5 +47,10 @@ Route::get('/ajax_search',[adminController::class,'ajax_search']);
 Route::get('/invoice',[adminController::class,'generatePDF']);
 Route::get('/invoice_download',[adminController::class,'invoice_download']);
 Route::post('/placeorder',[adminController::class,'placeorder']);
-
-
+Route::get('/stripePost',[adminController::class,'stripePost']);
+Route::get('/payment',[adminController::class,'payment']);
+Route::post('/chargenow',[adminController::class,'chargenow']);
+Route::get('/admin_index',[productController::class,'all_product']);
+Route::get('/admin_product_delete/{id}',[productController::class,'product_delete']);
+Route::post('/submit_review',[adminController::class,'review']);
+Route::post('/rate',[adminController::class,'rate']);

@@ -222,7 +222,7 @@
                         <h5 class="font-weight-medium mb-3">Products</h5>
                         @foreach($cdata as $data)
                         <div class="d-flex justify-content-between">
-                            <p>{{$data->name}}</p>
+                            <p>{{$data->name}}*{{$data->no_of_items}}</p>
                             <p>{{$data->price}}</p>
                         </div>
                         @endforeach
@@ -244,8 +244,6 @@
                     </div>
                 </div>
                 <div class="card border-secondary mb-5">
-              
-            
                     <div class="card-footer border-secondary bg-transparent">
                          <button class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3" type="submit">  Place Order </button>
                     </div>
@@ -255,6 +253,8 @@
     </div>
 </form>
     <!-- Checkout End -->
+
+
 
 
     <!-- Footer Start -->

@@ -16,7 +16,10 @@ use App\Models\product;
 use DateTime;
 use Dompdf\Dompdf;
 use PDF;
+use App\Models\cart;
 
+use Stripe\Charge;
+use Stripe\Customer;
 use Illuminate\Support\Facades\View;
 class adminController extends Controller
 
@@ -94,10 +97,20 @@ class adminController extends Controller
    
 
         public function index(Request $request){
-            //  cart details addition
-             $total_cart = 20;
             $data = DB::select('select * from product');
-                return view('index',['data'=>$data,'total_cart'=>$total_cart]);
+            //  cart details addition
+            if(Auth::check()){        
+                $userid = Auth::id();
+                $cart = cart::where('user_id', $userid)->get();
+                $count = $cart ? $cart->count() : 0;
+                return view('index',['data'=>$data,'total_cart'=>$count,'userid'=>$userid]);
+
+            } else {
+                $count = 0;
+                return view('index',['data'=>$data,'total_cart'=>$count]);
+
+            }
+                // return response()->json(['val'=>$count]);
         }
 
 
@@ -184,24 +197,7 @@ class adminController extends Controller
     public function payment(Request $request)
     {
         // Set the Stripe API key
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        //
-      
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-        $charge = Charge::create ([
-                "amount" => 100*100,
-                "currency" => "USD",
-                "source" => $request->stripeToken,
-                "description" => "This payment is testistuff",
-        ]);
-   
-        // Handle the Stripe response and redirect the user
-        if ($charge->status === 'succeeded') {
-            return redirect()->route('checkout')->with('success', 'Payment successful.');
-        } else {
-            return redirect()->route('checkout')->with('error', 'Payment failed.');
-        }
+        return view('newpayment');   
     }
 
 
@@ -464,14 +460,64 @@ public function generatePDF()
 }
 
 
+    public function chargenows(Request $request)
+    {
+        $amount = $request->input('amount');
+        $token = $request->input('stripeToken');
+        
+        // Create a new customer
+        $customer = Customer::create([
+            'email' => $request->input('email'),
+            'source' => $token,
+        ]);
+        
+        // Create a charge
+        $charge = Charge::create([
+            'customer' => $customer->id,
+            'amount' => $amount,
+            'currency' => 'usd',
+        ]);
+        
+        // Handle the payment response
+        if ($charge->status == 'succeeded') {
+            return redirect()->back()->with('success', 'Payment successful!');
+        } else {
+            return redirect()->back()->with('error', 'Payment failed!');
+        }
+    }
+
+
+public function chargenow(Request $request)
+{
+    \Stripe\Stripe::setApiKey( "sk_test_51Mea73SJaP0ximCYamrqV4g1GeQjvImK0KGEbxc97dA2HS1nzSb41jezwc5sCc9tfioeJQZw3TA7dRBgwpB51nJH00V1cqzY7q");
+
+
+    $token = $request->stripeToken;
+    $amount =100;
+
+    // Use the Stripe API to create a charge with the token and amount.
+    $charge = Charge::create([
+        'amount' => $amount * 100, // Stripe expects the amount in cents
+        'currency' => 'usd',
+        'source' => $token,
+        'description' => 'Example charge',
+    ]);
+    if ($charge) {
+        return redirect()->back()->with('success', 'Payment successful!');
+    } else {
+        return redirect()->back()->with('error', 'Payment failed!');
+    }
+    // Handle the response from Stripe and return a success or error message to the user.
 }
 
+public function review(){
 
+    return response()->json('review submitted');
+}
+public function rate(Request $request){
+    $val = $request->get('rating');
+    return response('rate'.$val);
+}
 
-// details in invoice  
-// user details                       Product Details
-// name                               product name1 price
-// email                              product name 2 price
-// contact address                    company name 
+}
 
-//                                     total Price 

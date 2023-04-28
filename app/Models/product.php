@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
     protected $table = 'product';
     
     protected $primaryKey = 'id';
-    
-    
+    public $timestamps = false;
+
     // Define your relationships with other models here
 }

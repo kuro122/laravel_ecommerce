@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>EShopper - Bootstrap Shop Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
@@ -24,6 +26,62 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
+    <script>
+            $(document).ready(function() {
+  // When a star is clicked, add the 'fas' class to it and remove 'far' class
+  $('.star-rating').click(function() {
+    $(this).removeClass('far').addClass('fas');
+    // Loop through all previous stars and add the 'fas' class to them as well
+    $(this).prevAll('.star-rating').removeClass('far').addClass('fas');
+    // Loop through all subsequent stars and add the 'far' class to them
+    $(this).nextAll('.star-rating').removeClass('fas').addClass('far');
+    // Change the color of all filled stars to yellow
+    $('.fas').css('color', 'yellow');
+    var rating = $(this).data('rating');
+    console.log(rating);
+    // Set the value of the rating input field to the selected rating
+    $('#rating').val(rating);
+  });
+  $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+  // Set up submit event for the form
+  $('form').submit(function(event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+    
+    // Get the form data
+    var formData = {
+        prodctid : 1,
+        userid :2,
+      rating: $('#rating').val(),
+      review: $('#message').val()
+      
+    };
+    console.log(formData);
+    // Send the form data to the server using AJAX
+    $.ajax({
+      type: 'POST',
+      url: '/submit_review', // Replace with the URL of the server-side script to handle form submission
+      data: formData,
+      dataType: 'json', // Set the expected data type to JSON
+    //   encode: tru
+    success: function (response){
+        console.log(response);
+        
+    }
+    })
+    
+    // .done(function(data) {
+    //   // Handle the response from the server
+    //   console.log(data,'url called success'); // Replace with your own code to handle the response
+    // });
+  });
+});
+
+    </script>
 
 <body>
     <script>
@@ -142,6 +200,16 @@ loginButton.addEventListener('click', function(event) {
             
             <div class="col-lg-7 pb-5">
                 <h3 class="font-weight-semi-bold">{{$data->name}}</h3>
+                <div class="d-flex mb-3">
+                    <div class="text-primary mr-2">
+                        <small class="fas fa-star"></small>
+                        <small class="fas fa-star"></small>
+                        <small class="fas fa-star"></small>
+                        <small class="fas fa-star-half-alt"></small>
+                        <small class="far fa-star"></small>
+                    </div>
+                    <small class="pt-1">(total Reviews)</small>
+                </div>
                 <div class="d-flex mb-3">
              
                 </div>
@@ -317,25 +385,19 @@ loginButton.addEventListener('click', function(event) {
                                 <div class="d-flex my-3">
                                     <p class="mb-0 mr-2">Your Rating * :</p>
                                     <div class="text-primary">
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                        <i class="far fa-star"></i>
+                                      <i class="far fa-star star-rating" data-rating="1" id="rating"></i>
+                                    <i class="far fa-star star-rating" data-rating="2" id="rating"></i>
+                                    <i class="far fa-star star-rating" data-rating="3" id="rating"></i>
+                                    <i class="far fa-star star-rating" data-rating="4" id="rating"></i>
+                                    <i class="far fa-star star-rating" data-rating="5" id="rating"></i>
+                            
                                     </div>
                                 </div>
                                 <form>
+                                    
                                     <div class="form-group">
                                         <label for="message">Your Review *</label>
                                         <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Your Name *</label>
-                                        <input type="text" class="form-control" id="name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Your Email *</label>
-                                        <input type="email" class="form-control" id="email">
                                     </div>
                                     <div class="form-group mb-0">
                                         <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">

@@ -136,7 +136,7 @@ $(document).ready(function() {
         </script>
     <!-- Topbar Start -->
     <div class="container-fluid">
-        <div class="row bg-secondary py-2 px-xl-5">
+        <div class="row py-2 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center">
                     @if(Auth::check())
@@ -167,35 +167,7 @@ $(document).ready(function() {
                 </div>
             </div>
         </div>
-        <div class="row align-items-center py-3 px-xl-5">
-            <div class="col-lg-3 d-none d-lg-block">
-                <a href="" class="text-decoration-none">
-                    <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
-                </a>
-            </div>
-            <div class="col-lg-6 col-6 text-left">
-                <form id="search-form">
-                    <div class="input-group">
-                      <input type="text" class="form-control" placeholder="Search for products" name="search">
-                      <div class="input-group-append">
-                        <span class="input-group-text bg-transparent text-primary">
-                          <i class="fa fa-search" id="searchIcon"></i>
-                        </span>
-                      </div>
-                    </div>
-                  </form>
-            </div>
-            <div class="col-lg-3 col-6 text-right">
-                <a href="" class="btn border">
-                    <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
-                </a>
-                <a href="" class="btn border">
-                    <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
-                </a>
-            </div>
-        </div>
+      
     </div>
     <!-- Topbar End -->
 
@@ -288,8 +260,7 @@ $(document).ready(function() {
     </div>
     <!-- Cart End -->
   <script>
-    //  product increment 
-
+    //  product increment
 var rate =  0;
 $('.quantity button' ).on('click', function () {
         var itemId = $(this).data('id');
@@ -392,7 +363,7 @@ $('.quantity button' ).on('click', function () {
     </div>
 </div>
 <!-- Footer End -->
-
+    
 
 <!-- Back to Top -->
 <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>

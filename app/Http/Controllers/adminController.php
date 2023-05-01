@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB ;
+
+use App\Mail\OrderNotification;
+use Illuminate\Support\Facades\Mail;
 use Stripe;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -454,6 +457,8 @@ public function generatePDF()
     </html>';
     
 
+    //  content = 'html code '.$content.'some new code ';php code content .='html code';  string strcuture
+
     $pdf = PDF::loadHTML($content);
     return $pdf->download('table.pdf');
 // return view('invoice');
@@ -518,6 +523,23 @@ public function rate(Request $request){
     $val = $request->get('rating');
     return response('rate'.$val);
 }
+
+
+
+public function bookOrder(Request $request)
+{
+    // Book the order
+    // $mail = 'the mail of user';
+    // Send email notification
+   $kk =  Mail::to('shivshankar@kuroit.in')->send(new OrderNotification());
+    if($kk){
+        return view('order');
+    }
+    else{
+        return response('error',500);
+    }
+}
+
 
 }
 

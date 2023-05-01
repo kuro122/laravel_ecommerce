@@ -15,7 +15,7 @@
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -27,81 +27,83 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
     <script>
-            $(document).ready(function() {
-  // When a star is clicked, add the 'fas' class to it and remove 'far' class
-  $('.star-rating').click(function() {
-    $(this).removeClass('far').addClass('fas');
-    // Loop through all previous stars and add the 'fas' class to them as well
-    $(this).prevAll('.star-rating').removeClass('far').addClass('fas');
-    // Loop through all subsequent stars and add the 'far' class to them
-    $(this).nextAll('.star-rating').removeClass('fas').addClass('far');
-    // Change the color of all filled stars to yellow
-    $('.fas').css('color', 'yellow');
-    var rating = $(this).data('rating');
-    console.log(rating);
-    // Set the value of the rating input field to the selected rating
-    $('#rating').val(rating);
-  });
-  $.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
+        $(document).ready(function() {
+            // When a star is clicked, add the 'fas' class to it and remove 'far' class
+            $('.star-rating').click(function() {
+                $(this).removeClass('far').addClass('fas');
+                // Loop through all previous stars and add the 'fas' class to them as well
+                $(this).prevAll('.star-rating').removeClass('far').addClass('fas');
+                // Loop through all subsequent stars and add the 'far' class to them
+                $(this).nextAll('.star-rating').removeClass('fas').addClass('far');
+                // Change the color of all filled stars to yellow
+                $('.fas').css('color', 'yellow');
+                var rating = $(this).data('rating');
+                console.log(rating);
+                // Set the value of the rating input field to the selected rating
+                $('#rating').val(rating);
+            });
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
 
-  // Set up submit event for the form
-  $('form').submit(function(event) {
-    event.preventDefault(); // Prevent the form from submitting normally
-    
-    // Get the form data
-    var formData = {
-        prodctid : 1,
-        userid :2,
-      rating: $('#rating').val(),
-      review: $('#message').val()
-      
-    };
-    console.log(formData);
-    // Send the form data to the server using AJAX
-    $.ajax({
-      type: 'POST',
-      url: '/submit_review', // Replace with the URL of the server-side script to handle form submission
-      data: formData,
-      dataType: 'json', // Set the expected data type to JSON
-    //   encode: tru
-    success: function (response){
-        console.log(response);
-        
-    }
-    })
-    
-    // .done(function(data) {
-    //   // Handle the response from the server
-    //   console.log(data,'url called success'); // Replace with your own code to handle the response
-    // });
-  });
-});
+            // Set up submit event for the form
+            //   $('form').submit(function(event) {
+            //     event.preventDefault(); // Prevent the form from submitting normally
+            $('#reviewForm').on('submit', function(event) {
+                event.preventDefault();
+                // document.getElementById("reviewform").submit();
+                // console.log('submit button cli')
+                // Get the form data
+                var formData = {
+                    prodctid: 1
+                    , userid: 2
+                    , rating: $('#rating').val()
+                    , review: $('#message').val()
+
+                };
+                console.log(formData);
+                // Send the form data to the server using AJAX
+                $.ajax({
+                    type: 'POST'
+                    , url: '/submit_review', // Replace with the URL of the server-side script to handle form submission
+                    data: formData
+                    , dataType: 'json', // Set the expected data type to JSON
+
+                    success: function(response) {
+                        // Display the response data in an alert box
+                        alert( JSON.stringify(response));
+                    }
+                    , error: function(jqXHR, textStatus, errorThrown) {
+                        console.log('Error submitting form: ' + textStatus + ' - ' + errorThrown);
+                    }
+                })
+            });
+        });
 
     </script>
 
 <body>
     <script>
-         document.getElementById('add-to-cart-btn').addEventListener('click', function() {
-    document.getElementById("sizeform").submit();
-        document.getElementById("colorform").submit();
-  });
+        document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+            document.getElementById("sizeform").submit();
+            console.log('submit button cli')
+            document.getElementById("colorform").submit();
+        });
         // Get a reference to the login button
-    var loginButton = document.getElementById('login-button');
+        var loginButton = document.getElementById('login-button');
 
-// Add a click event listener to the button
-loginButton.addEventListener('click', function(event) {
-    // Prevent the default behavior of the button, which is to submit the form
-    event.preventDefault();
-    
-    // Redirect the user to the specified URL
-    window.location.href = "/userlogin";
-}); 
-    
-</script>
+        // Add a click event listener to the button
+        loginButton.addEventListener('click', function(event) {
+            // Prevent the default behavior of the button, which is to submit the form
+            event.preventDefault();
+
+            // Redirect the user to the specified URL
+            window.location.href = "/userlogin";
+        });
+
+    </script>
     <!-- Topbar Start -->
     <div class="container-fluid">
         <div class="row bg-secondary py-2 px-xl-5">
@@ -109,11 +111,11 @@ loginButton.addEventListener('click', function(event) {
                 <div class="d-inline-flex align-items-center">
                     @if(Auth::check())
 
-                        <a class="text-dark" href="/logout">Logout</a>
-                     @else
-                        <a class="text-dark" href="/adminlogin">Login</a>
-                        @endif
-                
+                    <a class="text-dark" href="/logout">Logout</a>
+                    @else
+                    <a class="text-dark" href="/adminlogin">Login</a>
+                    @endif
+
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
@@ -145,14 +147,14 @@ loginButton.addEventListener('click', function(event) {
             <div class="col-lg-6 col-6 text-left">
                 <form id="myForm" action="/searcheddata" method="GET">
                     <div class="input-group">
-                      <input type="text" class="form-control" placeholder="Search for products" name="search">
-                      <div class="input-group-append">
-                        <span class="input-group-text bg-transparent text-primary">
-                          <i class="fa fa-search" id="searchIcon"></i>
-                        </span>
-                      </div>
+                        <input type="text" class="form-control" placeholder="Search for products" name="search">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search" id="searchIcon"></i>
+                            </span>
+                        </div>
                     </div>
-                  </form>
+                </form>
             </div>
             <div class="col-lg-3 col-6 text-right">
                 <a href="" class="btn border">
@@ -192,12 +194,12 @@ loginButton.addEventListener('click', function(event) {
                         <div class="carousel-item active">
                             <img class="w-100 h-100" src="/images/{{$data->image}}" alt="Image">
                         </div>
-                   
+
                     </div>
-                   
+
                 </div>
             </div>
-            
+
             <div class="col-lg-7 pb-5">
                 <h3 class="font-weight-semi-bold">{{$data->name}}</h3>
                 <div class="d-flex mb-3">
@@ -211,7 +213,7 @@ loginButton.addEventListener('click', function(event) {
                     <small class="pt-1">(total Reviews)</small>
                 </div>
                 <div class="d-flex mb-3">
-             
+
                 </div>
                 <h3 class="font-weight-semi-bold mb-4">RS. {{$data->price}}</h3>
                 <p class="mb-4">{{$data->description}}</p>
@@ -242,34 +244,34 @@ loginButton.addEventListener('click', function(event) {
                 </div>
                 <div class="d-flex mb-4">
                     <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
-                  
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black">
-                            <label class="custom-control-label" for="color-1">Black</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-2" name="color" value="White">
-                            <label class="custom-control-label" for="color-2">White</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-3" name="color" value="Red">
-                            <label class="custom-control-label" for="color-3">Red</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-4" name="color" value="Blue">
-                            <label class="custom-control-label" for="color-4">Blue</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-5" name="color" value="Green">
-                            <label class="custom-control-label" for="color-5">Green</label>
-                        </div>
+
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black">
+                        <label class="custom-control-label" for="color-1">Black</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" class="custom-control-input" id="color-2" name="color" value="White">
+                        <label class="custom-control-label" for="color-2">White</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" class="custom-control-input" id="color-3" name="color" value="Red">
+                        <label class="custom-control-label" for="color-3">Red</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" class="custom-control-input" id="color-4" name="color" value="Blue">
+                        <label class="custom-control-label" for="color-4">Blue</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" class="custom-control-input" id="color-5" name="color" value="Green">
+                        <label class="custom-control-label" for="color-5">Green</label>
+                    </div>
                     {{-- </form> --}}
                 </div>
                 <div class="d-flex align-items-center mb-4 pt-2">
                     <div class="input-group quantity mr-3" style="width: 130px;">
                         <div class="input-group-btn">
-                            <button class="btn btn-primary btn-minus" >
-                            <i class="fa fa-minus"></i>
+                            <button class="btn btn-primary btn-minus">
+                                <i class="fa fa-minus"></i>
                             </button>
                         </div>
                         <input type="text" class="form-control bg-secondary text-center" name="no_of_items" value="1">
@@ -279,15 +281,15 @@ loginButton.addEventListener('click', function(event) {
                             </button>
                         </div>
                     </div>
-                             @if(Auth::check())
-                <button class="btn btn-primary px-3" type="submit"><i class="fa fa-shopping-cart mr-1"></i>Add To Cart</button>
-             @else
-             <a href="/userlogin">back to login</a>
-             {{-- <button class="btn btn-primary px-3"  onclick="window.location.href='/userlogin';"><i class="fa fa-shopping-cart mr-1"></i>Login to Book</button> --}}
+                    @if(Auth::check())
+                    <button class="btn btn-primary px-3" type="submit"><i class="fa fa-shopping-cart mr-1"></i>Add To Cart</button>
+                    @else
+                    <a href="/userlogin">back to login</a>
+                    {{-- <button class="btn btn-primary px-3"  onclick="window.location.href='/userlogin';"><i class="fa fa-shopping-cart mr-1"></i>Login to Book</button> --}}
 
-                @endif
-                </form>
-    
+                    @endif
+                    </form>
+
                 </div>
                 <div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
@@ -340,7 +342,7 @@ loginButton.addEventListener('click', function(event) {
                                     <li class="list-group-item px-0">
                                         Takimata ea clita labore amet ipsum erat justo voluptua. Nonumy.
                                     </li>
-                                  </ul> 
+                                </ul>
                             </div>
                             <div class="col-md-6">
                                 <ul class="list-group list-group-flush">
@@ -356,7 +358,7 @@ loginButton.addEventListener('click', function(event) {
                                     <li class="list-group-item px-0">
                                         Takimata ea clita labore amet ipsum erat justo voluptua. Nonumy.
                                     </li>
-                                  </ul> 
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -385,16 +387,15 @@ loginButton.addEventListener('click', function(event) {
                                 <div class="d-flex my-3">
                                     <p class="mb-0 mr-2">Your Rating * :</p>
                                     <div class="text-primary">
-                                      <i class="far fa-star star-rating" data-rating="1" id="rating"></i>
-                                    <i class="far fa-star star-rating" data-rating="2" id="rating"></i>
-                                    <i class="far fa-star star-rating" data-rating="3" id="rating"></i>
-                                    <i class="far fa-star star-rating" data-rating="4" id="rating"></i>
-                                    <i class="far fa-star star-rating" data-rating="5" id="rating"></i>
-                            
+                                        <i class="far fa-star star-rating" data-rating="1" id="rating"></i>
+                                        <i class="far fa-star star-rating" data-rating="2" id="rating"></i>
+                                        <i class="far fa-star star-rating" data-rating="3" id="rating"></i>
+                                        <i class="far fa-star star-rating" data-rating="4" id="rating"></i>
+                                        <i class="far fa-star star-rating" data-rating="5" id="rating"></i>
+
                                     </div>
                                 </div>
-                                <form>
-                                    
+                                <form id="reviewForm">
                                     <div class="form-group">
                                         <label for="message">Your Review *</label>
                                         <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
@@ -428,7 +429,8 @@ loginButton.addEventListener('click', function(event) {
                         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                             <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
                             <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                                <h6>$123.00</h6>
+                                <h6 class="text-muted ml-2"><del>$123.00</del></h6>
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-light border">
@@ -443,7 +445,8 @@ loginButton.addEventListener('click', function(event) {
                         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                             <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
                             <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                                <h6>$123.00</h6>
+                                <h6 class="text-muted ml-2"><del>$123.00</del></h6>
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-light border">
@@ -458,7 +461,8 @@ loginButton.addEventListener('click', function(event) {
                         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                             <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
                             <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                                <h6>$123.00</h6>
+                                <h6 class="text-muted ml-2"><del>$123.00</del></h6>
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-light border">
@@ -473,7 +477,8 @@ loginButton.addEventListener('click', function(event) {
                         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                             <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
                             <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                                <h6>$123.00</h6>
+                                <h6 class="text-muted ml-2"><del>$123.00</del></h6>
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-light border">
@@ -488,7 +493,8 @@ loginButton.addEventListener('click', function(event) {
                         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                             <h6 class="text-truncate mb-3">Colorful Stylish Shirt</h6>
                             <div class="d-flex justify-content-center">
-                                <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                                <h6>$123.00</h6>
+                                <h6 class="text-muted ml-2"><del>$123.00</del></h6>
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-light border">
@@ -503,7 +509,7 @@ loginButton.addEventListener('click', function(event) {
     <!-- Products End -->
 
 
-  
+
     <!-- Footer Start -->
     <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
@@ -547,8 +553,7 @@ loginButton.addEventListener('click', function(event) {
                                 <input type="text" class="form-control border-0 py-4" placeholder="Your Name" required="required" />
                             </div>
                             <div class="form-group">
-                                <input type="email" class="form-control border-0 py-4" placeholder="Your Email"
-                                    required="required" />
+                                <input type="email" class="form-control border-0 py-4" placeholder="Your Email" required="required" />
                             </div>
                             <div>
                                 <button class="btn btn-primary btn-block border-0 py-3" type="submit">Subscribe Now</button>
@@ -575,18 +580,19 @@ loginButton.addEventListener('click', function(event) {
     <!-- Footer End -->
     <script>
         $(document).ready(function() {
-          $('.btn-plus').click(function(event) {
-            event.preventDefault();
-            var value = parseInt($('input[name="no_of_items"]').val());
-            $('input[name="no_of_items"]').val(value + 1);
-          });
-          $('.btn-minus').click(function(event) {
-            event.preventDefault();
-            var value = parseInt($('input[name="no_of_items"]').val());
-            $('input[name="no_of_items"]').val(value - 1);
-          });
+            $('.btn-plus').click(function(event) {
+                event.preventDefault();
+                var value = parseInt($('input[name="no_of_items"]').val());
+                $('input[name="no_of_items"]').val(value + 1);
+            });
+            $('.btn-minus').click(function(event) {
+                event.preventDefault();
+                var value = parseInt($('input[name="no_of_items"]').val());
+                $('input[name="no_of_items"]').val(value - 1);
+            });
         });
-        </script>
+
+    </script>
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>

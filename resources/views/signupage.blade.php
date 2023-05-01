@@ -8,14 +8,12 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link href="css/sign.css" rel="stylesheet">
-
     <title>Document</title>
 </head>
 <body>
 
 <form action="/adminsignup" method="post">
     @csrf
-       
         <label>
           <p class="label-txt">ENTER YOUR NAME</p>
           <input type="text" class="input" name="name" required>

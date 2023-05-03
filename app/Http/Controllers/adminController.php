@@ -233,30 +233,6 @@ public function stripe(){
     return view('pay');
 }
 
-public function stripePost(Request $request)
-{
-
-    \Stripe\Stripe::setApiKey('sk_test_51Mea73SJaP0ximCYamrqV4g1GeQjvImK0KGEbxc97dA2HS1nzSb41jezwc5sCc9tfioeJQZw3TA7dRBgwpB51nJH00V1cqzY7q');
-
-    $source = \Stripe\Source::create([
-        "type" => "card",
-        "card" => [
-            "token" => $request->stripeToken,
-        ],
-    ]);
-
-    $paymentIntent = \Stripe\PaymentIntent::create([
-        "amount" => 200,
-        "currency" => "inr",
-        "source" => $source->id,
-        "description" => "This payment is testing purpose of websolutionstuff",
-    ]);
-
-
-    Session::flash('success', 'Payment Successfull!');
-       
-    return 'payment done';
-}
 
 
 public function userlogin(){
@@ -465,55 +441,6 @@ public function generatePDF()
 }
 
 
-    public function chargenows(Request $request)
-    {
-        $amount = $request->input('amount');
-        $token = $request->input('stripeToken');
-        
-        // Create a new customer
-        $customer = Customer::create([
-            'email' => $request->input('email'),
-            'source' => $token,
-        ]);
-        
-        // Create a charge
-        $charge = Charge::create([
-            'customer' => $customer->id,
-            'amount' => $amount,
-            'currency' => 'usd',
-        ]);
-        
-        // Handle the payment response
-        if ($charge->status == 'succeeded') {
-            return redirect()->back()->with('success', 'Payment successful!');
-        } else {
-            return redirect()->back()->with('error', 'Payment failed!');
-        }
-    }
-
-
-public function chargenow(Request $request)
-{
-    \Stripe\Stripe::setApiKey( "sk_test_51Mea73SJaP0ximCYamrqV4g1GeQjvImK0KGEbxc97dA2HS1nzSb41jezwc5sCc9tfioeJQZw3TA7dRBgwpB51nJH00V1cqzY7q");
-
-
-    $token = $request->stripeToken;
-    $amount =100;
-
-    // Use the Stripe API to create a charge with the token and amount.
-    $charge = Charge::create([
-        'amount' => $amount * 100, // Stripe expects the amount in cents
-        'currency' => 'usd',
-        'source' => $token,
-        'description' => 'Example charge',
-    ]);
-    if ($charge) {
-        return redirect()->back()->with('success', 'Payment successful!');
-    } else {
-        return redirect()->back()->with('error', 'Payment failed!');
-    }
-    // Handle the response from Stripe and return a success or error message to the user.
-}
 
 public function review(){
 

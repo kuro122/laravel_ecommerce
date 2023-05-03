@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form action="/invoice" method="get">
+    <form action="/bookOrder" method="get">
       
         <script
           src="https://checkout.stripe.com/checkout.js" class="stripe-button"

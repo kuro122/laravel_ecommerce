@@ -67,7 +67,7 @@ class OrderNotification extends Mailable
     <title>New order has been booked</title>
 </head>
 <body>
-    <h1>New Order Has Been Booked</h1>
+    <h1>Your Order Has Been Booked</h1>
     <p>Thank you for choosing our E-SHOPPER service. Your order has been successfully booked.</p>
     <table>
     <thead>

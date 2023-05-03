@@ -8,6 +8,6 @@
 </head>
 <body>
     Your Order is booked Successfully. For More Details please check your Mail
-    <a href="">generate Invoice</a>
+    <a href="/invoice">generate Invoice</a>
 </body>
 </html>

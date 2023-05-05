@@ -16,10 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // Route::middleware('auth:api')->group(function () {
-    Route::get('/my-resource',[ApiController::class,'index']);
-    Route::get('/my-resource/{id}',[ApiController::class,'show']);
-    Route::post('/my-resource', [ApiController::class,'store']);
-    Route::put('/my-resource/{id}', [ApiController::class,'update']);
-    Route::delete('/my-resource/{id}',[ApiController::class,'destroy']);
+   
     Route::get('ormtesting',[ormController::class,'ormtesting']);
+    Route::post('addproducts',[ApiController::class,'addProductDetails']);
+    Route::post('login',[ApiController::class,'login']);
+    Route::get('getallproducts',[ApiController::class,'getallproducts']);
+    Route::get('getallusers',[ApiController::class,'getallusers']);
+    Route::get('search',[ApiController::class,'search']);
 // });

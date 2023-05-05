@@ -11,7 +11,7 @@ class cart extends Model
         'user_id',
         'product_id',
         'color',
-        'size',
+        'size', 
         'no_of_items',
     ];
     protected $table = 'cart';

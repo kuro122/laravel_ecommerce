@@ -85,7 +85,6 @@ class adminController extends Controller
     //    this is used for store image in local folder
             $imageName = time().'.'.$request->product_image->extension();  
             $request->product_image->move(public_path('images'), $imageName);
-
         
             // $product_image->move($destinationPath, $product_image);
             $ss = DB::insert("insert into product (name, image, price, description) values (?,?,?,?)", [$product_name,$imageName,$product_price,$product_about]);
@@ -94,11 +93,7 @@ class adminController extends Controller
             }else{
                 echo "error";
             }
-            
-        
         }
-   
-
         public function index(Request $request){
             $data = DB::select('select * from product');
             //  cart details addition

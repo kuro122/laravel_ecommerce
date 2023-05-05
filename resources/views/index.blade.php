@@ -25,6 +25,20 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
    <script>
+    $('#search-box').on('input', function() {
+            var query = $(this).val();
+            if (query.length >= 3) {
+                $.get('/search', {query: query}, function(data) {
+                    var suggestions = '';
+                    $.each(data, function(index, product) {
+                        suggestions += '<li>' + product.name + '</li>';
+                    });
+                    $('#search-suggestions').html(suggestions);
+                });
+            } else {
+                $('#search-suggestions').empty();
+            }
+        });
     $(function() {
         $('#search-form').on('submit', function(e) {
             e.preventDefault();

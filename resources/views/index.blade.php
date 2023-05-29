@@ -25,20 +25,33 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet">
    <script>
-    $('#search-box').on('input', function() {
-            var query = $(this).val();
-            if (query.length >= 3) {
-                $.get('/search', {query: query}, function(data) {
-                    var suggestions = '';
-                    $.each(data, function(index, product) {
-                        suggestions += '<li>' + product.name + '</li>';
-                    });
-                    $('#search-suggestions').html(suggestions);
-                });
-            } else {
-                $('#search-suggestions').empty();
-            }
-        });
+ // auto suggest starts
+ $('#search-form input[name="q"]').on('input', function() {
+    console.log("here --------------------");
+  var query = $(this).val();
+  if (query.length >= 2) {
+    $.get('/suggest?q=' + query, function(suggestions) {
+      var suggestionsHtml = '';
+      $.each(suggestions, function(index, suggestion) {
+        suggestionsHtml += '<div class="search-suggestion">' + suggestion + '</div>';
+      });
+      $('#search-suggestions').html(suggestionsHtml).show();
+    });
+  } else {
+    $('#search-suggestions').empty().hide();
+  }
+});
+
+$(document).on('click', '.search-suggestion', function() {
+  var suggestion = $(this).text();
+  $('#search-form input[name="q"]').val(suggestion);
+  $('#search-suggestions').empty().hide();
+//   $('#search-form').submit();
+});
+
+    // auto suggest ends
+   
+
     $(function() {
         $('#search-form').on('submit', function(e) {
             e.preventDefault();
@@ -93,8 +106,7 @@
         <div class="row bg-secondary py-2 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center">
-                    @if(Auth::check())
-
+                    @if(Auth::check())                   
                         <a class="text-dark" href="/logout">Logout</a>
                      @else
                         <a class="text-dark" href="/userlogin">Login</a>
@@ -131,16 +143,18 @@
             <div class="col-lg-6 col-6 text-left">
                 <form id="search-form">
                     <div class="input-group">
-                      <input type="text" class="form-control" placeholder="Search for products" name="search">
+                      <input type="text" class="form-control" placeholder="Search for products" name="q">
                       <div class="input-group-append">
                         <button type="submit" class="btn btn-outline-primary">
                             <i class="fa fa-search"></i>
                           </button>
-                    
                       </div>
                     </div>
+                  <div id="search-suggestions" class="search-suggestions"></div>
+
                   </form>
-            </div>
+             </div>
+
             <div class="col-lg-3 col-6 text-right">
                 <a href="" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
@@ -151,10 +165,7 @@
                     <i class="fas fa-shopping-cart text-primary"></i>
                     <span class="badge">{{$total_cart}}</span>
                 </a>
-                
-                    
                 @else
-                    
                 @endif
             </div>
         </div>

@@ -40,3 +40,10 @@ Route::get('/admin_product_delete/{id}',[productController::class,'product_delet
 Route::post('/submit_review',[adminController::class,'review']);
 Route::post('/rate',[adminController::class,'rate']);
 Route::get('/bookOrder',[adminController::class,'bookOrder']);
+
+Route::get('autocompleteSearch',[adminController::class,'autocompleteSearch']);
+Route::get('autosuggest',[adminController::class,'autosuggestsearch']); //
+Route::get('/suggest', [adminController::class,'suggest']);
+Route::get('/blacklist',[adminController::class,'blacklist']);
+Route::get('/delist-details', [adminController::class, 'getDelistDetails']);
+Route::get('/hi', [adminController::class, 'hi']);

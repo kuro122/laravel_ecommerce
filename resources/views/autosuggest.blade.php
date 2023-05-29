@@ -1,3 +1,77 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <title>Document</title>
+   <style>
+    .search-suggestions {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.search-suggestions div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-suggestions div:hover {
+  background-color: #ddd;
+}
+
+   </style>
+</head>
+<body>
+   {{-- <form id="search-form">
+      <input type="text" name="q" placeholder="Search...">
+   </form>
+   
+   <div id="search-suggestions"></div> --}}
+   <div class="search-container">
+    <form id="search-form">
+      <input type="text" name="q" placeholder="Search...">
+      <div id="search-suggestions" class="search-suggestions"></div>
+    </form>
+  </div>
+  
+   <script>
+
+    $('#search-form input[name="q"]').on('input', function() {
+  var query = $(this).val();
+  if (query.length >= 2) {
+    $.get('/suggest?q=' + query, function(suggestions) {
+      var suggestionsHtml = '';
+      $.each(suggestions, function(index, suggestion) {
+        suggestionsHtml += '<div class="search-suggestion">' + suggestion + '</div>';
+      });
+      $('#search-suggestions').html(suggestionsHtml).show();
+    });
+  } else {
+    $('#search-suggestions').empty().hide();
+  }
+});
+
+$(document).on('click', '.search-suggestion', function() {
+  var suggestion = $(this).text();
+  $('#search-form input[name="q"]').val(suggestion);
+  $('#search-suggestions').empty().hide();
+  $('#search-form').submit();
+});
+
+   </script>
+</body>
+</html>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

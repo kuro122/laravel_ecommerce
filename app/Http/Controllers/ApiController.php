@@ -81,13 +81,12 @@ public function login(Request $request)
     //  get search result
     public function search(Request $request){
         $searchTerm = $request->input('query');
-    
-        $searchdata = product::where('name', 'like', '%' .'pants' . '%')
-                            ->orWhere('description', 'like', '%' . 'pants' . '%')
+        $searchdata = product::where('name', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('description', 'like', '%' . $searchTerm . '%')
                             ->get();
     
         return response()->json(['data' => $searchdata]);
     }
     
-
+    
 }

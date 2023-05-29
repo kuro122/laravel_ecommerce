@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 class productController extends Controller
 {
     public function all_product(){
-      
         $data = DB::select('select * from product');
         return view('admin_index',['data'=>$data]);
 }    

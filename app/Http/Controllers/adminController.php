@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB ;
-
+use Illuminate\Support\Facades\Http;
 use App\Mail\OrderNotification;
 use Illuminate\Support\Facades\Mail;
 use Stripe;
@@ -244,10 +244,6 @@ public function login_user(Request $request){
 }
 
 
-public function search(){
-    
-    return view('search');
-}
 
 public function searcheddata(Request $request)
 {
@@ -257,8 +253,15 @@ public function searcheddata(Request $request)
                         ->orWhere('description', 'like', '%' . $searchTerm . '%')
                         ->get();
 
-    return response()->json(['data' => $data]);
+    return view('search',['data'=>$data]);
 }
+
+public function autocompleteSearch(Request $request)
+{
+      $query = $request->get('query');
+      $filterResult = product::where('name', 'LIKE', '%'. $query. '%')->get();
+      return response()->json($filterResult);
+} 
 
 public function createnewcoupon(Request $request){
     return view('createcoupon');
@@ -368,20 +371,8 @@ public function generatePDF()
     <head>
         <meta charset="UTF-8">
         <title>Invoice</title>
-        <style>
-            table {
-                border-collapse: collapse;
-                width: 100%;
-            }
-            th, td {
-                text-align: left;
-                padding: 8px;
-                
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-        </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+      
     </head>
     <body>
     <h1>E-SHOPPER</h1>
@@ -392,42 +383,42 @@ public function generatePDF()
     address : 
     <br>
     contact : 
-        <table>
+        <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Total</th>
                 </tr>
             </thead>
             <tbody>';
             foreach ($data as $row) {
-                $content .= '<tr>
+                $content .= '<tr scope="row">
                     <td>'.$row->name.'</td>
                     <td>'.$row->no_of_items.'</td>
-                    <td>'.$row->price.'</td>
+                    <td>'.$row->price.' Rs.</td>
                 </tr>';
             }
             $content .= '
                 <tr>
                     <td colspan="3">Subtotal</td>
-                    <td>'.$total.'</td>
+                    <td>'.$total.' Rs.</td>
                 </tr>
                 <tr>
                     <td colspan="3">Shipping</td>
-                    <td>'.$tax.'</td>
+                    <td>'.$tax.' Rs.</td>
                 </tr>
                 <tr>
                     <td colspan="3">Total</td>
-                    <td>'.$total+$tax.'</td>
+                    <td>'.$total+$tax.' Rs.</td>
                 </tr>
             </tbody>
         </table>
     </body>
     </html>';
     
-
+  
     //  content = 'html code '.$content.'some new code ';php code content .='html code';  string strcuture
 
     $pdf = PDF::loadHTML($content);
@@ -462,6 +453,44 @@ public function bookOrder(Request $request)
     }
 }
 
+public function autosuggestsearch(){
+    
+    return view('autosuggest');
+}
+
+    public function suggest(Request $request)
+{
+    $query = $request->input('q');
+    $products = product::where('name', 'like', '%'.$query.'%')->limit(5)->get();
+    return response()->json($products->pluck('name'));
+}
+
+public function blacklist(){
+    return view('blacklist');
+}
+
+
+
+public function getDelistDetails(Request $request)
+{
+    $apiKey = '9e4JJUDrP4jEF0nQ6dv4HUdSd5Xw9qGz';
+    $ip = $request->input('ip');
+
+    $response = Http::get("http://blacklist.kuroit.co.uk/api/delistdetails", [
+        'apikey' => $apiKey,
+        'ip' => $ip,
+    ]);
+
+    $data = $response->json();
+
+    // Handle the response data as needed
+    // For example, you can return the data as a JSON response
+    return response()->json($data);
+}
+
+public function hi(){
+    return view("hi");
+}
 
 }
 

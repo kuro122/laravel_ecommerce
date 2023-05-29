@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
     Route::post('addproducts',[ApiController::class,'addProductDetails']);
     Route::post('login',[ApiController::class,'login']);
     Route::get('getallproducts',[ApiController::class,'getallproducts']);
-    Route::get('getallusers',[ApiController::class,'getallusers']);
-    Route::get('search',[ApiController::class,'search']);
+    Route::get('getallusers',[ApiController::class,'getallusers']);    // get users by id 
+    Route::get('getuserbyid/{id}',[ApiController::class,'getuserbyid']);    // get users by id 
+
+    Route::post('search',[ApiController::class,'search']);
 // });
